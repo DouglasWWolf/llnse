@@ -216,3 +216,8 @@ debug:
 
 
 # DO NOT DELETE
+
+obj_x86/access_lib/gpioAccess.o: access_lib/llnseConnImpl.h
+obj_x86/access_lib/gpioAccess.o: access_lib/llnse_messages.h
+obj_x86/access_lib/llnseConn.o: access_lib/llnseConnImpl.h
+obj_x86/access_lib/llnseConn.o: access_lib/llnse_messages.h

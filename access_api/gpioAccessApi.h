@@ -21,7 +21,7 @@ namespace gpioAccess
         // Call this to force the server to generate a fault response
         void        fault(uint32_t error);
 
-        // Call this to set the 4 on-board LEDs 
+        // Call this to set the four on-board LEDs 
         void        setLeds(uint32_t leds);
         
         // Call this to retreive the four on-board DIP switchesa

@@ -1,4 +1,5 @@
 #pragma once
+#include <mutex>
 #include "llnseApi.h"
 #include "llnse_messages.h"
 
@@ -24,6 +25,9 @@ protected:
     
     // File descriptor - Client-In-Server-Out
     int     ciso_fd_;
+
+    // We synchronize remote procedure calls via this mutex
+    std::mutex mutex_;
 };
 //=============================================================================
 

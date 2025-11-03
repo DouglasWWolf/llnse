@@ -3,7 +3,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdarg.h>
-#include <mutex>
 #include "llnseConnImpl.h"
 
 
@@ -128,10 +127,9 @@ void Connection::Impl::rpc(base_msg_t& req, base_msg_t& rsp)
     const uint32_t HEADER_SIZE = sizeof(base_msg_t);
     char* payload;
     uint32_t payload_len;
-    static std::mutex mtx;
 
-    // Ensure single threaded access to this routine
-    std::lock_guard<std::mutex> lock(mtx);
+    // Ensure single threaded access to this connection
+    std::lock_guard<std::mutex> lock(mutex_);
 
     // Send our requests
     rc = write(cosi_fd_, &req, req.msglen);
@@ -150,9 +148,13 @@ void Connection::Impl::rpc(base_msg_t& req, base_msg_t& rsp)
         );
     }
 
+    // Determine how long we expect the response message to be
+    uint32_t expected_length = (message.msgtype == MSG_FAULT) ?
+               sizeof(fault_rsp_t) : rsp.msglen;
+
     // Make sure the length of the response message is exactly the
     // number of bytes we're expecting
-    if (message.msgtype != MSG_FAULT && message.msglen != rsp.msglen)
+    if (message.msglen != expected_length)
     {
         THROW_EXCEPTION
         (

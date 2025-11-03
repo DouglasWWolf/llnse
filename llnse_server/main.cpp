@@ -14,6 +14,8 @@
 #include "nse_channel.h"
 #include "global.h"
 
+// "parseCommandLine" will set this is the "-down" switch is used
+bool bring_down = false;
 
 // Global variables
 global_t g;
@@ -49,10 +51,40 @@ void start_channel(uint32_t channel)
 //=============================================================================
 
 
+//=============================================================================
+// Parse the command line parameters.
+//
+// On output:  bring_down = true if we should bring down the server
+//=============================================================================
+void parseCommandLine(const char** argv)
+{
+    int i=1;
+
+    while (argv[i])
+    {
+        std::string token = argv[i++];
+
+        if (token == "-kill")
+        {
+            bring_down = true;
+            continue;
+        }
+
+        std::cout << "Unknown command parameter: " << token << "\n";
+        exit(1);
+    }
+}
+//=============================================================================
+
+
+
 int main(int argc, const char** argv)
 {
     // Don't terminate due to broken pipes!
     signal(SIGPIPE, SIG_IGN);
+
+    // Parse the command line
+    parseCommandLine(argv);
 
     try
     {
@@ -62,9 +94,45 @@ int main(int argc, const char** argv)
     {
         std::cerr << e.what() << '\n';
     }
-    
 
 }
+
+//=============================================================================
+// kill_server() - If another copy of this program is running, calling this
+//                 function should cause it to terminate
+//=============================================================================
+void kill_server()
+{
+    char signal_fifo[256];
+    int  rc, fd;
+    const char* X = "X";
+
+    // Have to be root to do this
+    if (geteuid() != 0)
+    {
+        throwRuntime("Must be root user.  Use sudo!");
+    }
+
+    // Create the signal FIFO
+    sprintf(signal_fifo, "%s/signal.fifo", g.fifo_folder.c_str());
+    rc = mkfifo(signal_fifo, 0666);
+    if (rc != 0 && errno != EEXIST)
+    {
+        throwRuntime("Failed to create %s", signal_fifo);
+    }
+
+    // Open the signal FIFO for writing
+    fd = open(signal_fifo, O_WRONLY);
+    if (fd < 0)
+    {
+        throwRuntime("Failed to open %s", signal_fifo);        
+    }
+
+    // Write an uppercase "X" to the signal pipe
+    rc = write(fd, X, 1);
+    close(fd);
+}
+//=============================================================================
 
 
 //=============================================================================
@@ -76,6 +144,13 @@ void execute()
     int rc, fd = -1;
     uint8_t channel;
 
+    // If we're just bringing down another copy of the server, make it so
+    if (bring_down)
+    {
+        kill_server();
+        exit(0);
+    }
+   
     // Map the RTL registers into userspace
         g.leds.map(0xA4001000);
     g.switches.map(0xA4002000);
@@ -113,6 +188,13 @@ void execute()
             close(fd);
             fd = -1;
             continue;
+        }
+
+        // A channe number of decimal 88 means "Drop dead"
+        if (channel == 'X')
+        {
+            fprintf(stderr, "llnse_server has been killed\n");
+            exit(0);
         }
 
         // Crank up a server thread for this channel

@@ -1,6 +1,7 @@
+#include <unistd.h>
 #include <iostream>
 #include "gpioAccessApi.h"
-
+using std::cout, std::cerr;
 
 void execute();
 
@@ -27,7 +28,7 @@ int main(int argc, const char** argv)
     }
     catch(const llnse::runtime_error& e)
     {
-        std::cerr << e.file_ << "(" << e.line_ << "): " << e.what() << "\n";
+        cerr << e.file_ << "(" << e.line_ << "): " << e.what() << "\n";
         exit(1);        
     }
     
@@ -52,7 +53,17 @@ void execute()
     
     // Ping the server and display the response
     int pong = gpio.ping(314159);
-    std::cout << "The ping response was " << pong << "\n";
+    cout << "The ping response was " << pong << "\n";
+
+    // Loop through all 16 LED combinations
+    for (uint32_t i=0; i<16; ++i)
+    {
+        gpio.setLeds(i);
+        usleep(250000);
+    }
+
+    uint32_t dipSwitches = gpio.getSwitches();
+    cout << "The DIP switches are set to: " << dipSwitches << "\n";
 
     // Last but not least, let's have the llnse server generate an 
     // exception to make sure we handle it properly

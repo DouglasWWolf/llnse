@@ -83,6 +83,9 @@ int main(int argc, const char** argv)
     // Don't terminate due to broken pipes!
     signal(SIGPIPE, SIG_IGN);
 
+    // Allow this application to directly set file permissions
+    umask(0777);
+
     // Parse the command line
     parseCommandLine(argv);
 
@@ -165,6 +168,7 @@ void execute()
     {
         throwRuntime("Failed to create %s", signal_fifo);
     }
+    chmod(signal_fifo, 0666);
 
     // Open the signal FIFO for reading
     fd = open(signal_fifo, O_RDONLY);

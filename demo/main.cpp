@@ -5,11 +5,13 @@ using std::cout, std::cerr;
 
 void execute();
 
+
+
 //=============================================================================
 // The folder where the llnse FIFOs live depends on what architecture we're on
 //=============================================================================
 #ifdef __aarch64__
-    std::string fifo_folder = "/fs";
+    std::string fifo_folder = "/etc/fifos";
 #else
     std::string fifo_folder = "/home/wolf/fifos";
 #endif

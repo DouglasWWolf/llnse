@@ -1,16 +1,16 @@
 #pragma once
 #include <stdint.h>
 #include "mmio.h"
-class CGPIO
+class CGPIO : public CMMIO
 {
 public:
+    
+    // Default constructor
+    CGPIO() : CMMIO() {};
 
-    void        map(uint32_t address);
+public:
+
     void        write(uint32_t value);
     uint32_t    read();
 
-protected:
-
-    CMMIO   mmio_;
-  
 };

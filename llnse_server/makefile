@@ -217,5 +217,7 @@ debug:
 
 # DO NOT DELETE
 
-obj_x86/main.o: nse_channel.h global.h
-obj_x86/nse_channel.o: global.h nse_channel.h
+obj_x86/mmio.o: mmio.h
+obj_x86/gpio.o: gpio.h mmio.h global.h
+obj_x86/main.o: nse_channel.h global.h gpio.h mmio.h
+obj_x86/nse_channel.o: global.h gpio.h mmio.h nse_channel.h llnse_messages.h

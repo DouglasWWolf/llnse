@@ -150,10 +150,13 @@ void execute()
         kill_server();
         exit(0);
     }
-   
+
+    // Build the memory map in RAM
+    CMMIO::readMemoryMap(g.memmap);
+
     // Map the RTL registers into userspace
-        g.leds.map(0xA4001000);
-    g.switches.map(0xA4002000);
+        g.leds.map("/pl_rtl/axi_gpio_0/S_AXI");
+    g.switches.map("/pl_rtl/axi_gpio_1/S_AXI");
 
     // Create the signal FIFO
     sprintf(signal_fifo, "%s/signal.fifo", g.fifo_folder.c_str());

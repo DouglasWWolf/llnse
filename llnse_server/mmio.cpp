@@ -26,7 +26,7 @@ std::string asciiAddr(uint32_t addr)
 //=============================================================================
 // map() - Maps a block of address space into users-space
 //=============================================================================
-void CMMIO::map(const std::string name, uint32_t size)
+void CMMIO::map(const std::string& name, uint32_t size)
 {
      auto it = memmap_.find(name);
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "gpio.h"
+#include "rtlid.h"
 
 void throwRuntime(const char* fmt, ...);
 
@@ -21,4 +22,5 @@ struct global_t
 
     CGPIO   leds;
     CGPIO   switches;
+    CRtlId  rtlid;
 };

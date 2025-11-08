@@ -18,7 +18,8 @@ namespace llnse
         MSG_FAULT = 0,
         MSG_PING,
         MSG_SET_LEDS,
-        MSG_GET_SWITCHES        
+        MSG_GET_SWITCHES,
+        MSG_GET_RTL        
     };
 
     // This is the maximum size of a message
@@ -64,6 +65,20 @@ namespace llnse
     struct get_switches_rsp_t : public base_msg_t
     {
         uint32_t value;
+    };
+
+    struct get_rtl_req_t : public base_msg_t
+    {
+    };
+
+    struct get_rtl_rsp_t : public base_msg_t
+    {
+        char     version[16];
+        char     date[16];
+        char     time[16];
+        char     hash[64];
+        uint32_t type;        
+        uint32_t subtype;
     };
 
 

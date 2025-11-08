@@ -12,7 +12,7 @@ void throwRuntime(const char* fmt, ...);
 std::map<std::string, uint32_t> CMMIO::memmap_;
 
 //=============================================================================
-// asciiAddr() - Converts a 32-bit address into a displayable hex ASCII string
+// asciiAddr() - Converts a 32-bit address into a displayable hex ASCII
 //=============================================================================
 std::string asciiAddr(uint32_t addr)
 {

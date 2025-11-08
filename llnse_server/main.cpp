@@ -162,22 +162,6 @@ void execute()
     g.switches.map("/pl_rtl/axi_gpio_1/S_AXI");
        g.rtlid.map("/pl_rtl/axi_revision/S_AXI");
 
-    char buffer[100];
-    g.rtlid.getVersion(buffer);
-    printf("Version = \"%s\"\n", buffer);
-    g.rtlid.getDate(buffer);
-    printf("Date = \"%s\"\n", buffer);
-    g.rtlid.getTime(buffer);
-    printf("Time = \"%s\"\n", buffer);
-    printf("RTL Type: %u\n", g.rtlid.getRtlType());
-    printf("RTL Subtype: %u\n", g.rtlid.getRtlSubtype());
-    g.rtlid.getHash(buffer);
-    printf("Hash = \"%s\"\n", buffer);
-
-    exit(0);
-
-
-
     // Create the signal FIFO
     sprintf(signal_fifo, "%s/signal.fifo", g.fifo_folder.c_str());
     rc = mkfifo(signal_fifo, 0666);

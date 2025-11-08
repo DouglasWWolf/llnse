@@ -1,5 +1,8 @@
 #include "rtlid.h"
 
+//=============================================================================
+// Register definitions
+//=============================================================================
 const uint32_t REG_MAJOR       = 0;
 const uint32_t REG_MINOR       = 1;
 const uint32_t REG_BUILD       = 2;
@@ -13,6 +16,7 @@ const uint32_t REG_HASH_1      = 17;
 const uint32_t REG_HASH_2      = 18; 
 const uint32_t REG_HASH_3      = 19; 
 const uint32_t REG_HASH_4      = 20; 
+//=============================================================================
 
 
 #define reg ((uint32_t*)iobase_)
@@ -36,11 +40,11 @@ void CRtlId::map(const std::string& name, uint32_t size)
         reg[REG_RTL_TYPE] = 11125;
         reg[REG_DATE    ] = (11 << 24) | (4 << 16) | 2025;
         reg[REG_TIME    ] = (15 << 16) | (40 << 8) | 11;
-        reg[REG_HASH_4  ] = 0x01020304;
-        reg[REG_HASH_3  ] = 0x05060708;
+        reg[REG_HASH_0  ] = 0x01020304;
+        reg[REG_HASH_1  ] = 0x05060708;
         reg[REG_HASH_2  ] = 0x090A0B0C;
-        reg[REG_HASH_1  ] = 0x0D0E0F10;
-        reg[REG_HASH_0  ] = 0x11121314;
+        reg[REG_HASH_3  ] = 0x0D0E0F10;
+        reg[REG_HASH_4  ] = 0x11121314;
     #endif
 }
 //=============================================================================
@@ -87,8 +91,8 @@ void CRtlId::getTime(char* buffer)
 //=============================================================================
 // These fetch the pair of integers that define what kind of RTL we are
 //=============================================================================
-uint32_t CRtlId::getRtlType()    {return reg[REG_RTL_TYPE   ];}
-uint32_t CRtlId::getRtlSubtype() {return reg[REG_RTL_SUBTYPE];}
+uint32_t CRtlId::getType()    {return reg[REG_RTL_TYPE   ];}
+uint32_t CRtlId::getSubtype() {return reg[REG_RTL_SUBTYPE];}
 //=============================================================================
 
 

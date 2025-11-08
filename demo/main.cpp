@@ -57,18 +57,29 @@ void execute()
     int pong = gpio.ping(314159);
     cout << "The ping response was " << pong << "\n";
 
+    auto rtl = gpio.getRtl();
+    cout << "RTL Type    = " << rtl.type    << "\n";
+    cout << "RTL Subtype = " << rtl.subtype << "\n";
+    cout << "RTL Version = " << rtl.version << "\n";
+    cout << "RTL Date    = " << rtl.date    << "\n";
+    cout << "RTL Time    = " << rtl.time    << "\n";
+    cout << "RTL Hash    = " << rtl.hash    << "\n";
+
     // Loop through all 16 LED combinations
+    cout << "Blinking the LEDS for a moment...\n";
     for (uint32_t i=0; i<16; ++i)
     {
         gpio.setLeds(i);
         usleep(250000);
     }
 
+    // Fetch the value of the 4 DIP switches and display it
     uint32_t dipSwitches = gpio.getSwitches();
     cout << "The DIP switches are set to: " << dipSwitches << "\n";
 
     // Last but not least, let's have the llnse server generate an 
     // exception to make sure we handle it properly
+    cout << "These next message we see had better be an exception!\n\n";
     gpio.fault(42);
 
 }

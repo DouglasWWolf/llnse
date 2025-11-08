@@ -6,6 +6,16 @@
 
 namespace gpioAccess
 {
+    // Returned by "getRtl()"
+    struct rtl_t
+    {
+        char     version[16];
+        char     date[16];
+        char     time[16];
+        char     hash[64];
+        uint32_t type;        
+        uint32_t subtype;
+    };
 
     //=========================================================================
     // Access layer for on-board GPIO leds and switches
@@ -26,6 +36,9 @@ namespace gpioAccess
         
         // Call this to retreive the four on-board DIP switchesa
         uint32_t    getSwitches();
+
+        // Fetch identify information about the RTL design
+        rtl_t       getRtl();
 
 
     public:

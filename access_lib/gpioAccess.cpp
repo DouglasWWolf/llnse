@@ -1,3 +1,4 @@
+#include <cstring>
 #include "gpioAccessApi.h"
 #include "llnseConnImpl.h"
 
@@ -70,6 +71,30 @@ uint32_t CGpioAccess::getSwitches()
     MAKE_STRUCTS(llnse::get_switches, llnse::MSG_GET_SWITCHES);
     conn_.p_impl->rpc(req, rsp);
     return rsp.value;
+}
+//=============================================================================
+
+//=============================================================================
+// getRtl() - Returns identifying information about the RTL build
+//=============================================================================
+rtl_t CGpioAccess::getRtl()
+{
+    rtl_t rtl;
+
+    MAKE_STRUCTS(llnse::get_rtl, llnse::MSG_GET_RTL);
+    conn_.p_impl->rpc(req, rsp);
+
+    // Copy the various fields from response message into the structure
+    // that we are going to return to the caller
+    strcpy(rtl.date,    rsp.date);
+    strcpy(rtl.time,    rsp.time);
+    strcpy(rtl.hash,    rsp.hash);
+    strcpy(rtl.version, rsp.version);
+    rtl.type    = rsp.type;
+    rtl.subtype = rsp.subtype;
+
+    // Hand the RTL identity structure to the caller
+    return rtl;
 }
 //=============================================================================
 

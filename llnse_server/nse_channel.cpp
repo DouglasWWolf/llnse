@@ -53,6 +53,18 @@ void handle_get_switches(const char* msg_in, char* msg_out)
 }
 
 
+void handle_get_rtl(const char* msg_in, char* msg_out)
+{
+    MAKE_STRUCTS(get_rtl);    
+
+    g.rtlid.getDate(rsp.date);
+    g.rtlid.getTime(rsp.time);
+    g.rtlid.getHash(rsp.hash);
+    g.rtlid.getVersion(rsp.version);
+    rsp.type = g.rtlid.getType();
+    rsp.subtype = g.rtlid.getSubtype();
+}
+
 
 //=============================================================================
 // start() -  launches a server that waits for messages to arrive on COSI
@@ -158,6 +170,10 @@ void CNseChannel::fifo_server(uint32_t channel)
 
             case MSG_GET_SWITCHES:
                 handle_get_switches(msg_in, msg_out);
+                break;
+
+            case MSG_GET_RTL:
+                handle_get_rtl(msg_in, msg_out);
                 break;
 
             default:

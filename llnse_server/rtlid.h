@@ -25,6 +25,6 @@ public:
     void  getHash(char* buffer);
 
     // Fetch the pair of integers that defines what RTL this is
-    uint32_t getRtlType();
-    uint32_t getRtlSubtype();
+    uint32_t getType();
+    uint32_t getSubtype();
 };

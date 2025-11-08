@@ -57,6 +57,7 @@ void execute()
     int pong = gpio.ping(314159);
     cout << "The ping response was " << pong << "\n";
 
+    // Fetch the RTL identity information and display it
     auto rtl = gpio.getRtl();
     cout << "RTL Type    = " << rtl.type    << "\n";
     cout << "RTL Subtype = " << rtl.subtype << "\n";

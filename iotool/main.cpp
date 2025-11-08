@@ -218,7 +218,7 @@ void execute()
         s = getKeyword(c++);
         if (s.empty())
         {
-            cout << "Missing parameter\n";
+            cerr << "Missing parameter\n";
             exit(1);            
         }
 
@@ -229,6 +229,10 @@ void execute()
         fpga.setLeds(value);
         exit(0);
     }
+
+    // If we get here, we didn't recognize the command
+    cerr << "syntax-error\n";
+    exit(1);
 }
 //=============================================================================
 

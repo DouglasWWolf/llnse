@@ -1,0 +1,8 @@
+#!/bin/bash -i
+vping || exit 1
+vcp demo/demo.arm /fs
+vcp llnse_server/llnse.arm /fs
+vcp iotool/iotool.arm /fs        
+vssh chmod +x /fs/demo.arm
+vssh chmod +x /fs/llnse.arm
+vssh chmod +x /fs/iotool.arm

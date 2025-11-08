@@ -1,17 +1,10 @@
-#!/bin/bash -i
-
-if [ $1 == "download" ] || [ $1 == "install" ]; then
-    vping || exit 1
-    vcp demo/demo.arm /fs
-    vcp llnse_server/llnse.arm /fs
-    vssh chmod +x /fs/demo.arm
-    vssh chmod +x /fs/llnse.arm
-    exit 0
-fi
 
 cd demo
 make $1 $2 $3 $4
 cd -
 cd llnse_server
 make $1 $2 $3 $4
+cd -
+cd iotool
+make $1 $2 $3 $4 
 cd -

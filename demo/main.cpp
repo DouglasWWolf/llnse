@@ -66,11 +66,13 @@ void execute()
     cout << "RTL Time    = " << rtl.time    << "\n";
     cout << "RTL Hash    = " << rtl.hash    << "\n";
 
-    // Loop through all 16 LED combinations
+    // Blink the LEDs in a pattern
     cout << "Blinking the LEDS for a moment...\n";
     for (uint32_t i=0; i<16; ++i)
     {
-        gpio.setLeds(i);
+        gpio.setLeds(9);
+        usleep(250000);
+        gpio.setLeds(6);
         usleep(250000);
     }
 
@@ -80,7 +82,7 @@ void execute()
 
     // Last but not least, let's have the llnse server generate an 
     // exception to make sure we handle it properly
-    cout << "These next message we see had better be an exception!\n\n";
+    cout << "The next message we see had better be an exception!\n\n";
     gpio.fault(42);
 
 }

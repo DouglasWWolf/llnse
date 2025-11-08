@@ -4,6 +4,9 @@ cd -
 cd llnse_server
 make clean
 cd -
+cd iotool
+make clean
+cd -
 git add .
 git commit -m "No change history kept"
 git push origin main

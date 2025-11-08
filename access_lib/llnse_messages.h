@@ -10,7 +10,7 @@ namespace llnse
     const uint32_t MESSAGE_VERSION = 1;
 
     // This is the maximum length of any message
-    const uint32_t MAX_MSG_LENGTH = 128;
+    const uint32_t MAX_MSG_LENGTH = 256;
 
     // Message types
     enum msgtype_t : uint16_t

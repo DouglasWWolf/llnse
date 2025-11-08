@@ -70,7 +70,6 @@ namespace llnse
     struct get_rtl_req_t : public base_msg_t
     {
     };
-
     struct get_rtl_rsp_t : public base_msg_t
     {
         char     version[16];

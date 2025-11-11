@@ -14,12 +14,6 @@ public:
 
     // Initialize once, just after program startup
     bool    init(const std::string& moduleName);
-    
-    // Convenience method for writing a fatal log entry
-    void    fatal(const char* fmt, ...);
-
-    // Convenience method for writing a trace log entry
-    void    trace(const char* fmt, ...);
 
     // This is the underlying "log()" mechanism that all the other logging methods call
     void    log(Severity sev, const char* file, uint32_t line, const char* fmt, va_list& ap);

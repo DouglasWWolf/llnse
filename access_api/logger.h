@@ -26,9 +26,6 @@ public:
 
     // Call this to write a message to the log
     void    log(Severity sev, const char* file, uint32_t line, const char* fmt, ...);
-    
-    // Convenience method for writing a fatal log entry
-    void    fatal(const char* fmt, ...);
 
     // Convenience method for writing a trace log entry
     void    trace(const char* fmt, ...);

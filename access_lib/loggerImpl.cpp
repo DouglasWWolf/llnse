@@ -81,11 +81,8 @@ void CLogger::Impl::log(Severity sev, const char* file, uint32_t line,
     p = strchr(entry, 0);    
     vsnprintf(p, end - p, fmt, ap);
    
-    
-    printf("%s\n", entry);
+    // Send the log entry to the log server    
     sender_.send(entry, strlen(entry)+1);
-
-
 }
 //=============================================================================
 

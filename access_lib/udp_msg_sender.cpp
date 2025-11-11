@@ -111,7 +111,6 @@ void Sender::create(std::string ip, uint32_t port)
         sd_ = -1;
     }
 
-
     // Create the addrinfo structure for sending UDP messages
     if (!get_server_addrinfo(SOCK_DGRAM, ip.c_str(), port,  AF_INET, &remote_))
     {

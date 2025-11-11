@@ -2,9 +2,16 @@
 cd demo
 make $1 $2 $3 $4
 cd -
+
 cd llnse_server
 make $1 $2 $3 $4
 cd -
+
 cd iotool
 make $1 $2 $3 $4 
 cd -
+
+cd logger_test
+make $1 $2 $3 $4
+cd -
+

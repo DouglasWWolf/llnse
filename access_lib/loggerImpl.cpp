@@ -34,7 +34,7 @@ bool CLogger::Impl::init(const std::string& moduleName)
 void CLogger::Impl::log(Severity sev, const char* file, uint32_t line,
      const char* fmt, va_list& ap)
 {
-    char entry[1024], *p;
+    char entry[2048], *p;
     const char* end = entry + sizeof(entry) - 1;
     char datestring[64], tz[8];
     const char* severity;

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
-#include <cstdarg>
+#include <memory>
+
 namespace log {
 
 enum Severity
@@ -15,12 +16,13 @@ enum Severity
     OFF
 };
 
+
 class CLogger
 {
 public:
 
     // Initialize once, just after program startup
-    void    init(const std::string& moduleName);
+    bool    init(const std::string& moduleName);
 
     // Call this to write a message to the log
     void    log(Severity sev, const char* file, uint32_t line, const char* fmt, ...);
@@ -31,15 +33,20 @@ public:
     // Convenience method for writing a trace log entry
     void    trace(const char* fmt, ...);
 
-protected:
+// Has to be public because other classes access this
+public:
+    class Impl;
+    std::unique_ptr<Impl> p_impl;
 
-    // This is the underlying "log()" mechanism that all the other logging methods call
-    void    log(Severity sev, const char* file, uint32_t line, const char* fmt, va_list& ap);
+    // Regular constructor/destructor
+     CLogger();
+    ~CLogger();
 
-    // The name of the module that the logger is running in
-    std::string  module_;
+    // Objects of this class can't be copied;
+    CLogger(const CLogger&) = delete;
+    CLogger& operator=(const CLogger&) = delete;
+     
 };
-
 
 
 } // End of namespace

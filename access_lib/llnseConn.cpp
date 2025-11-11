@@ -29,7 +29,7 @@ static std::string va_fmt(const char* fmt, ...)
     char buffer[1024];
     va_list ap;
     va_start(ap, fmt);
-    vsprintf(buffer, fmt, ap);
+    vsnprintf(buffer, sizeof buffer, fmt, ap);
     va_end(ap);
     return buffer;
 };

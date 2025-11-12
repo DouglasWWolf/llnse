@@ -77,7 +77,7 @@ void CLogger::Impl::log(Severity sev, const char* file, uint32_t line,
     p = strchr(entry, 0);
     snprintf(p, end - p, "[%s:%s:%i] ", module_.c_str(), file, line);
 
-    // Stuff the formatted error message into "emtry"
+    // Stuff the formatted error message into "entry"
     p = strchr(entry, 0);    
     vsnprintf(p, end - p, fmt, ap);
    

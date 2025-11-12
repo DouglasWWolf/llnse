@@ -10,7 +10,7 @@ cd iotool
 make clean
 cd -
 
-cd logger_test
+cd log
 make clean
 cd -
 

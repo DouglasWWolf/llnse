@@ -30,5 +30,5 @@ public:
 
 protected:
 
-    uint8_t receiveByte(uint32_t microseconds);
+    uint8_t receiveByte(uint32_t microseconds, uint8_t deviceID);
 };

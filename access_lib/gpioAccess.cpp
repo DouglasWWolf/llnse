@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cstdarg>
 #include "gpioAccessApi.h"
 #include "llnseConnImpl.h"
 
@@ -28,10 +29,17 @@ CGpioAccess::~CGpioAccess() = default;
 //=============================================================================
 // fault() - This will force the server to generate a fault response
 //=============================================================================
-void CGpioAccess::fault(uint32_t error)
+void CGpioAccess::fault(uint32_t error, const char* fmt, ...)
 {
+    va_list ap;
     MAKE_STRUCTS(llnse::fault, llnse::MSG_FAULT);
+    
     req.error = error;
+
+    va_start(ap, fmt);
+    vsnprintf(req.text, sizeof(req.text), fmt, ap);
+    va_end(ap);
+
     conn_.p_impl->rpc(req, rsp);
 }
 //=============================================================================

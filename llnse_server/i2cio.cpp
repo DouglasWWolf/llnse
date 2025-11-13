@@ -1,5 +1,10 @@
 #include <unistd.h>
+#include <cstdarg>
 #include "i2cio.h"
+
+
+void throwRuntime(const char* fmt, ...);
+
 
 //=============================================================================
 // Register definitions - See AMD/Xilinx PG090 "AXI IIC Bus Interface"
@@ -108,8 +113,7 @@ void CI2CIO::writeRegister(uint8_t deviceID,
         usleep(10);
         if (reg[IIC_ISR] & (I2C_ERR_ARB | I2C_ERR_TX))
         {
-            printf("Transmit failed\n");
-            return;            
+            throwRuntime("I2C TX fault on device 0x%02X", deviceID);    
         }
 
         // If the I2C bus is no longer busy, we're done
@@ -120,8 +124,8 @@ void CI2CIO::writeRegister(uint8_t deviceID,
 
     }
 
-    printf("The I2C bus never came back!\n");
-    return;
+    // The bus never went idle!
+    throwRuntime("I2C TX timeout on device 0x%02X", deviceID);    
 }
 //=============================================================================
 
@@ -174,7 +178,7 @@ uint32_t CI2CIO::readRegister(uint8_t deviceID,
     // Build the return value by reading bytes from the RX_FIFO
     for (i=0; i<dataBytes; ++i)
     {
-        retval = (retval << 8) | receiveByte(1000);
+        retval = (retval << 8) | receiveByte(1000, deviceID);
     }
 
     // Hand the resulting value to the caller
@@ -186,7 +190,7 @@ uint32_t CI2CIO::readRegister(uint8_t deviceID,
 //=============================================================================
 // receiveByte() - Waits for a byte to arrive in the RX_FIFO
 //=============================================================================
-uint8_t CI2CIO::receiveByte(uint32_t timeout_us)
+uint8_t CI2CIO::receiveByte(uint32_t timeout_us, uint8_t deviceID)
 {
     uint32_t elapsed_us = 0;
 
@@ -201,7 +205,9 @@ uint8_t CI2CIO::receiveByte(uint32_t timeout_us)
         elapsed_us += 10;
     }
 
-    printf("RX Fault!\n");
-    exit(0);
+    throwRuntime("I2C Read fault on device 0x%02X", deviceID);
+
+    // This is here to keep the compiler happy
+    return 0;
 }
 //=============================================================================

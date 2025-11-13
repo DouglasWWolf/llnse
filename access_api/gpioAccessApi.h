@@ -29,7 +29,7 @@ namespace gpioAccess
         uint32_t    ping(uint32_t value);
 
         // Call this to force the server to generate a fault response
-        void        fault(uint32_t error);
+        void        fault(uint32_t error, const char* fmt, ...);
 
         // Call this to set the four on-board LEDs 
         void        setLeds(uint32_t leds);

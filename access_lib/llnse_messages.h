@@ -37,11 +37,14 @@ namespace llnse
  
     struct fault_req_t : public base_msg_t
     {
-        uint32_t    error;        
+        uint32_t    error;
+        char        text[MAX_MSG_LENGTH - 16];       
     };
+
     struct fault_rsp_t : public base_msg_t
     {
         uint32_t    error;        
+        char        text[MAX_MSG_LENGTH - 16];       
     };
 
 

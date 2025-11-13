@@ -83,7 +83,7 @@ void execute()
     // Last but not least, let's have the llnse server generate an 
     // exception to make sure we handle it properly
     cout << "The next message we see had better be an exception!\n\n";
-    gpio.fault(42);
+    gpio.fault(42, "Fault intentionally generated from demo");
 
 }
 //=============================================================================

@@ -1,9 +1,11 @@
 #include <unistd.h>
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <iostream>
 #include "global.h"
 #include "nse_channel.h"
 #include "llnse_messages.h"
@@ -19,12 +21,20 @@ void throwRuntime(const char* fmt, ...);
 
 
 
-void generate_fault(char* msg_out, uint32_t error)
+void generate_fault(char* msg_out, uint32_t error, const char* fmt, ...)
 {
+    va_list ap;
+    
     fault_rsp_t& rsp = *(fault_rsp_t*)msg_out;
+
     rsp.msglen = sizeof(rsp);
     rsp.msgtype = MSG_FAULT;
     rsp.error = error;
+
+    va_start(ap, fmt);
+    vsnprintf(rsp.text, sizeof(rsp.text), fmt, ap);
+    va_end(ap);
+
 }
 
 void handle_ping(const char* msg_in, char* msg_out)
@@ -38,6 +48,7 @@ void handle_fault(const char* msg_in, char* msg_out)
 {
     MAKE_STRUCTS(fault);
     rsp.error = req.error;
+    strcpy(rsp.text, req.text);
 }
 
 void handle_set_leds(const char* msg_in, char* msg_out)
@@ -158,7 +169,6 @@ void CNseChannel::fifo_server(uint32_t channel)
 
     while (true)
     {
-        
         // Fetch the message length
         rc = read(in_fd, msg_in, 2);
         if (rc != 2)
@@ -180,48 +190,57 @@ void CNseChannel::fifo_server(uint32_t channel)
         // Read in the rest of the message
         rc = read(in_fd, msg_in+2, req.msglen - 2);
 
-        switch(req.msgtype)
+        try
         {
-            case MSG_FAULT:
-                handle_fault(msg_in, msg_out);
-                break;
+            switch(req.msgtype)
+            {
+                case MSG_FAULT:
+                    handle_fault(msg_in, msg_out);
+                    break;
 
-            case MSG_PING:
-                handle_ping(msg_in, msg_out);
-                break;            
+                case MSG_PING:
+                    handle_ping(msg_in, msg_out);
+                    break;            
 
-            case MSG_SET_LEDS:
-                handle_set_leds(msg_in, msg_out);
-                break;
+                case MSG_SET_LEDS:
+                    handle_set_leds(msg_in, msg_out);
+                    break;
 
-            case MSG_GET_SWITCHES:
-                handle_get_switches(msg_in, msg_out);
-                break;
+                case MSG_GET_SWITCHES:
+                    handle_get_switches(msg_in, msg_out);
+                    break;
 
-            case MSG_GET_RTL:
-                handle_get_rtl(msg_in, msg_out);
-                break;
+                case MSG_GET_RTL:
+                    handle_get_rtl(msg_in, msg_out);
+                    break;
 
-            case MSG_SET_PX0_IODIR:
-                handle_set_px0_iodir(msg_in, msg_out);
-                break;
+                case MSG_SET_PX0_IODIR:
+                    handle_set_px0_iodir(msg_in, msg_out);
+                    break;
 
-            case MSG_SET_PX0_PULLUP:
-                handle_set_px0_pullup(msg_in, msg_out);
-                break;
+                case MSG_SET_PX0_PULLUP:
+                    handle_set_px0_pullup(msg_in, msg_out);
+                    break;
 
-            case MSG_SET_PX0_GPIO:
-                handle_set_px0_gpio(msg_in, msg_out);
-                break;
+                case MSG_SET_PX0_GPIO:
+                    handle_set_px0_gpio(msg_in, msg_out);
+                    break;
 
-            case MSG_GET_PX0_GPIO:
-                handle_get_px0_gpio(msg_in, msg_out);
-                break;
+                case MSG_GET_PX0_GPIO:
+                    handle_get_px0_gpio(msg_in, msg_out);
+                    break;
                 
-            default:
-                generate_fault(msg_out, 1);
-                break;
+                default:
+                    throwRuntime("unknown message %i", req.msgtype);    
+                    break;
+            }
         }
+        catch(const std::exception& e)
+        {
+            std::string msg = e.what();
+            generate_fault(msg_out, 1, "llnse: %s", msg.c_str());
+        }
+
 
         // Send the response message
         rc = write(out_fd, msg_out, rsp.msglen);

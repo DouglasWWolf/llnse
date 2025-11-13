@@ -1,17 +1,21 @@
 
 cd demo
+echo make demo $1 $2 $3 $4
 make $1 $2 $3 $4
 cd -
 
 cd llnse_server
+echo make llnse_server $1 $2 $3 $4
 make $1 $2 $3 $4
 cd -
 
 cd iotool
+echo make iotool $1 $2 $3 $4
 make $1 $2 $3 $4 
 cd -
 
 cd log
+echo make log $1 $2 $3 $4
 make $1 $2 $3 $4
 cd -
 

@@ -200,9 +200,7 @@ void Connection::Impl::rpc(base_msg_t& req, base_msg_t& rsp)
         THROW_EXCEPTION
         (
             llnse::runtime_error,
-            "On message %i, server reports fault %i",
-            (uint16_t)req.msgtype,
-            message.error
+            "%i: %s", message.error, message.text
         );
     }
 

@@ -2,6 +2,8 @@
 #include <string>
 #include "gpio.h"
 #include "rtlid.h"
+#include "i2cio.h"
+#include "mcp23017.h"
 
 void throwRuntime(const char* fmt, ...);
 
@@ -20,7 +22,9 @@ struct global_t
     #endif
 
 
-    CGPIO   leds;
-    CGPIO   switches;
-    CRtlId  rtlid;
+    CGPIO     leds;
+    CGPIO     switches;
+    CRtlId    rtlid;
+    CI2CIO    i2c_0;
+    CMCP23017 px0;
 };

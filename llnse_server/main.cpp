@@ -161,6 +161,10 @@ void execute()
         g.leds.map("/pl_rtl/axi_gpio_0/S_AXI");
     g.switches.map("/pl_rtl/axi_gpio_1/S_AXI");
        g.rtlid.map("/pl_rtl/axi_revision/S_AXI");
+       g.i2c_0.map("/pl_rtl/axi_iic_0/S_AXI");
+
+    // Initialize the MCP23017 port expander
+    g.px0.init(g.i2c_0, 0x20);
 
     // Create the signal FIFO
     sprintf(signal_fifo, "%s/signal.fifo", g.fifo_folder.c_str());

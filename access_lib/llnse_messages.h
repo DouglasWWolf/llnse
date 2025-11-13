@@ -19,7 +19,11 @@ namespace llnse
         MSG_PING,
         MSG_SET_LEDS,
         MSG_GET_SWITCHES,
-        MSG_GET_RTL        
+        MSG_GET_RTL,
+        MSG_SET_PX0_IODIR,
+        MSG_SET_PX0_PULLUP,        
+        MSG_SET_PX0_GPIO,
+        MSG_GET_PX0_GPIO,
     };
 
     // This is the maximum size of a message
@@ -55,9 +59,7 @@ namespace llnse
     {
         uint32_t    value;
     };
-    struct set_leds_rsp_t : public base_msg_t
-    {
-    };
+    struct set_leds_rsp_t : public base_msg_t {};
 
     struct get_switches_req_t : public base_msg_t
     {
@@ -67,9 +69,7 @@ namespace llnse
         uint32_t value;
     };
 
-    struct get_rtl_req_t : public base_msg_t
-    {
-    };
+    struct get_rtl_req_t : public base_msg_t {};
     struct get_rtl_rsp_t : public base_msg_t
     {
         char     version[16];
@@ -78,6 +78,34 @@ namespace llnse
         char     hash[64];
         uint32_t type;        
         uint32_t subtype;
+    };
+
+
+    struct set_px0_iodir_req_t : public base_msg_t
+    {
+        uint16_t inputs;        
+    };
+    struct set_px0_iodir_rsp_t : public base_msg_t {};
+
+
+    struct set_px0_pullup_req_t : public base_msg_t
+    {
+        uint16_t pins;        
+    };
+    struct set_px0_pullup_rsp_t : public base_msg_t {};
+
+
+    struct set_px0_gpio_req_t : public base_msg_t
+    {
+        uint16_t pins;        
+    };
+    struct set_px0_gpio_rsp_t : public base_msg_t {};
+
+
+    struct get_px0_gpio_req_t : public base_msg_t {};
+    struct get_px0_gpio_rsp_t : public base_msg_t
+    {
+        uint16_t pins;        
     };
 
 

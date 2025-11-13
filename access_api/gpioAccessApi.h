@@ -40,6 +40,18 @@ namespace gpioAccess
         // Fetch identify information about the RTL design
         rtl_t       getRtl();
 
+        // Set the directions of the 16 pins of PX0
+        void        setPx0Iodir(uint16_t inputs);
+
+        // Enable the optional pullup resistors of the 16 input pins of PX0
+        void        setPx0Pullup(uint16_t pins);
+
+        // Set the GPIO output values of the 16 pins of PX0
+        void        setPx0Gpio(uint16_t pins);
+
+        // Read the value of the 16 pins of PX0
+        uint16_t    getPx0Gpio();
+
 
     public:
          CGpioAccess(llnse::Connection& conn); 

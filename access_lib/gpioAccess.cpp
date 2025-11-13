@@ -99,5 +99,58 @@ rtl_t CGpioAccess::getRtl()
 //=============================================================================
 
 
+//=============================================================================
+// Set the directions of the 16-pins on port-expander PX0
+//=============================================================================
+void CGpioAccess::setPx0Iodir(uint16_t inputs)
+{
+    MAKE_STRUCTS(llnse::set_px0_iodir, llnse::MSG_SET_PX0_IODIR);
+    req.inputs = inputs;
+    conn_.p_impl->rpc(req, rsp);    
+}
+//=============================================================================
+
+
+
+//=============================================================================
+// Enables optional pullup resistors on the 16-pins on port-expander PX0
+//=============================================================================
+void CGpioAccess::setPx0Pullup(uint16_t pins)
+{
+    MAKE_STRUCTS(llnse::set_px0_pullup, llnse::MSG_SET_PX0_PULLUP);
+    req.pins = pins;
+    conn_.p_impl->rpc(req, rsp);    
+}
+//=============================================================================
+
+
+
+//=============================================================================
+// Set the value of the 16 output pins on port-expander PX0
+//=============================================================================
+void CGpioAccess::setPx0Gpio(uint16_t pins)
+{
+    MAKE_STRUCTS(llnse::set_px0_gpio, llnse::MSG_SET_PX0_GPIO);
+    req.pins = pins;
+    conn_.p_impl->rpc(req, rsp);    
+}
+//=============================================================================
+
+
+
+
+//=============================================================================
+// Get the value of the 16 input pins on port-expander PX0
+//=============================================================================
+uint16_t CGpioAccess::getPx0Gpio()
+{
+    MAKE_STRUCTS(llnse::get_px0_gpio, llnse::MSG_GET_PX0_GPIO);
+    conn_.p_impl->rpc(req, rsp);    
+    return rsp.pins;
+}
+//=============================================================================
+
+
+
 
 } /* End of namespace */

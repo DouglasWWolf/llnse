@@ -65,6 +65,32 @@ void handle_get_rtl(const char* msg_in, char* msg_out)
     rsp.subtype = g.rtlid.getSubtype();
 }
 
+void handle_set_px0_iodir(const char* msg_in, char* msg_out)
+{
+    MAKE_STRUCTS(set_px0_iodir);
+    g.px0.set_dir(req.inputs);
+}
+
+void handle_set_px0_pullup(const char* msg_in, char* msg_out)
+{
+
+    MAKE_STRUCTS(set_px0_pullup);
+    g.px0.set_pullup(req.pins);
+}
+
+void handle_set_px0_gpio(const char* msg_in, char* msg_out)
+{
+    MAKE_STRUCTS(set_px0_gpio);
+    g.px0.set_gpio(req.pins);
+}
+
+void handle_get_px0_gpio(const char* msg_in, char* msg_out)
+{
+    MAKE_STRUCTS(get_px0_gpio);
+    rsp.pins = g.px0.get_gpio();
+}
+
+
 
 //=============================================================================
 // start() -  launches a server that waits for messages to arrive on COSI
@@ -176,6 +202,22 @@ void CNseChannel::fifo_server(uint32_t channel)
                 handle_get_rtl(msg_in, msg_out);
                 break;
 
+            case MSG_SET_PX0_IODIR:
+                handle_set_px0_iodir(msg_in, msg_out);
+                break;
+
+            case MSG_SET_PX0_PULLUP:
+                handle_set_px0_pullup(msg_in, msg_out);
+                break;
+
+            case MSG_SET_PX0_GPIO:
+                handle_set_px0_gpio(msg_in, msg_out);
+                break;
+
+            case MSG_GET_PX0_GPIO:
+                handle_get_px0_gpio(msg_in, msg_out);
+                break;
+                
             default:
                 generate_fault(msg_out, 1);
                 break;

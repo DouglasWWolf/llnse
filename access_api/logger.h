@@ -30,10 +30,7 @@ public:
     // Convenience method for writing a trace log entry
     void    trace(const char* fmt, ...);
 
-// Has to be public because other classes access this
 public:
-    class Impl;
-    std::unique_ptr<Impl> p_impl;
 
     // Regular constructor/destructor
      CLogger();
@@ -42,7 +39,11 @@ public:
     // Objects of this class can't be copied;
     CLogger(const CLogger&) = delete;
     CLogger& operator=(const CLogger&) = delete;
-     
+
+protected:
+    class Impl;
+    std::unique_ptr<Impl> p_impl;
+
 };
 
 

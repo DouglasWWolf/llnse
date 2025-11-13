@@ -121,8 +121,30 @@ void showHelp()
     printf("   iotool rtl-type\n");
     printf("   iotool gpio-switches\n");
     printf("   iotool gpio-leds <value>\n");
+    printf("   iotool px0-iodir <value>\n");
+    printf("   iotool px0-pullup <value>\n");    
+    printf("   iotool px0-gpio [new_value]\n");        
+
 }
 //=============================================================================
+
+
+//=============================================================================
+// Fetches a keyword as a uint32_t
+//=============================================================================
+uint32_t getu32(int index)
+{
+    std::string s = getKeyword(index);
+    if (s.empty())
+    {
+        cerr << "Missing parameter\n";
+        exit(1);            
+    }
+    return touint32(s);
+}
+//=============================================================================
+
+
 
 
 //=============================================================================
@@ -214,21 +236,55 @@ void execute()
     // Is the user setting the GPIO LEDs?
     if (cmd == "gpio-leds")
     {   
-        // Fetch the pattern to drive out to the LEDs
-        s = getKeyword(c++);
-        if (s.empty())
-        {
-            cerr << "Missing parameter\n";
-            exit(1);            
-        }
-
-        // Convert the LED pattern to binary
-        value = touint32(s);
+        // Fetch a numeric value
+        value = getu32(c++);
 
         // And drive the LEDS to the specified value
         fpga.setLeds(value);
         exit(0);
     }
+
+    // Is the user setting the direction of the pins on PX0?
+    if (cmd == "px0-iodir")
+    {
+        // Fetch a numeric value
+        value = getu32(c++);
+
+        // Set the directions of the 16 pins on PX0
+        fpga.setPx0Iodir(value);
+        exit(0);
+    }
+
+
+    // Is the user enabling pullup resistors on PX0?
+    if (cmd == "px0-pullup")
+    {
+        // Fetch a numeric value
+        value = getu32(c++);
+
+        // Enable/disable optional pullup resistors on PX0
+        fpga.setPx0Pullup(value);
+        exit(0);
+    }
+
+    // Is the user setting / getting GPIO outputs on PX0?
+    if (cmd == "px0-gpio")
+    {
+        s = getKeyword(c++);
+
+        if (s.empty())
+        {
+            value = fpga.getPx0Gpio();
+            cout << value << "\n";                        
+        }
+        else
+        {
+            fpga.setPx0Gpio(touint32(s));
+        }
+        exit(0);
+    }
+
+
 
     // If we get here, we didn't recognize the command
     cerr << "syntax-error\n";

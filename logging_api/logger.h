@@ -25,10 +25,10 @@ public:
     bool    init(const std::string& moduleName);
 
     // Call this to write a message to the log
-    void    log(Severity sev, const char* file, uint32_t line, const char* fmt, ...);
+    void    log(Severity sev, const char* file, uint32_t line, const std::string& fmt, ...);
 
     // Convenience method for writing a trace log entry
-    void    trace(const char* fmt, ...);
+    void    trace(const std::string& fmt, ...);
 
 public:
 

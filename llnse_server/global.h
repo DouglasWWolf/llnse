@@ -4,8 +4,11 @@
 #include "rtlid.h"
 #include "i2cio.h"
 #include "mcp23017.h"
+#include "logger.h"
 
-void throwRuntime(const char* fmt, ...);
+void throwRuntime(const std::string& fmt, ...);
+
+std::string format(const char* fmt, ...);
 
 struct global_t
 {
@@ -22,9 +25,14 @@ struct global_t
     #endif
 
 
-    CGPIO     leds;
-    CGPIO     switches;
-    CRtlId    rtlid;
-    CI2CIO    i2c_0;
-    CMCP23017 px0;
+    CGPIO        leds;
+    CGPIO        switches;
+    CRtlId       rtlid;
+    CI2CIO       i2c_0;
+    CMCP23017    px0;
+    log::CLogger Logger;
 };
+
+extern global_t g;
+
+#define LOG_FATAL(fmt, ...) g.Logger.log(log::FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__)

@@ -16,7 +16,7 @@ EXE = log
 # This is a list of directories that have compilable code in them.  If there
 # are no subdirectories, this line is must SUBDIRS = .
 #-----------------------------------------------------------------------------
-SUBDIRS = . access_lib
+SUBDIRS = . logging_lib
 
 
 #-----------------------------------------------------------------------------
@@ -41,7 +41,7 @@ CXXFLAGS =	\
 -D_GNU_SOURCE \
 -Wno-sign-compare \
 -Wno-unused-value \
--I access_api
+-I logging_api
 
 #-----------------------------------------------------------------------------
 # Link options
@@ -217,7 +217,5 @@ debug:
 
 # DO NOT DELETE
 
-obj_x86/access_lib/gpioAccess.o: access_lib/llnseConnImpl.h
-obj_x86/access_lib/gpioAccess.o: access_lib/llnse_messages.h
-obj_x86/access_lib/llnseConn.o: access_lib/llnseConnImpl.h
-obj_x86/access_lib/llnseConn.o: access_lib/llnse_messages.h
+obj_x86/logging_lib/logger.o: logging_lib/loggerImpl.h
+obj_x86/logging_lib/loggerImpl.o: logging_lib/loggerImpl.h

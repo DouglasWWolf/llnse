@@ -10,9 +10,7 @@
 #include "nse_channel.h"
 #include "llnse_messages.h"
 
-extern global_t g;
 using namespace llnse;
-void throwRuntime(const char* fmt, ...);
 
 #define MAKE_STRUCTS(x) const x##_req_t& req = *(x##_req_t*)msg_in; \
                         x##_rsp_t& rsp = *(x##_rsp_t*)msg_out;\

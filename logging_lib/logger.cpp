@@ -18,7 +18,7 @@ bool CLogger::init(const std::string& moduleName)
 // log() - General purpose logging routine
 //=============================================================================
 void CLogger::log(Severity sev, const char* file, uint32_t line,
-                  const char* fmt, ...)
+                  const std::string& fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
@@ -31,7 +31,7 @@ void CLogger::log(Severity sev, const char* file, uint32_t line,
 //=============================================================================
 // trace() - Log a trace log-entry
 //=============================================================================
-void CLogger::trace(const char* fmt, ...)
+void CLogger::trace(const std::string& fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);

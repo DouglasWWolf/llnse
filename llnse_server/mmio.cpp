@@ -5,9 +5,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include "mmio.h"
-
-
-void throwRuntime(const char* fmt, ...);
+#include "global.h"
 
 std::map<std::string, uint32_t> CMMIO::memmap_;
 

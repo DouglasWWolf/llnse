@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include "nse_channel.h"
 #include "global.h"
+#include "logger.h"
 
 // "parseCommandLine" will set this is the "-down" switch is used
 bool bring_down = false;
@@ -25,15 +26,30 @@ void execute();
 //=============================================================================
 // throwRuntime() - Throws a runtime exception
 //=============================================================================
-void throwRuntime(const char* fmt, ...)
+void throwRuntime(const std::string& fmt, ...)
 {
     char buffer[1024];
     va_list ap;
     va_start(ap, fmt);
-    vsprintf(buffer, fmt, ap);
+    vsprintf(buffer, fmt.c_str(), ap);
     va_end(ap);
 
     throw std::runtime_error(buffer);
+}
+//=============================================================================
+
+
+//=============================================================================
+// Formats a string using printf-style formatting
+//=============================================================================
+std::string format(const char* fmt, ...)
+{
+    char buffer[1024];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(buffer, sizeof buffer, fmt, ap);
+    va_end(ap);
+    return buffer;
 }
 //=============================================================================
 
@@ -146,6 +162,9 @@ void execute()
     char signal_fifo[256];
     int rc, fd = -1;
     uint8_t channel;
+
+    // Initialize the logger
+    g.Logger.init("llnse");
 
     // If we're just bringing down another copy of the server, make it so
     if (bring_down)

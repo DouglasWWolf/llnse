@@ -16,7 +16,7 @@ EXE = llnse
 # This is a list of directories that have compilable code in them.  If there
 # are no subdirectories, this line is must SUBDIRS = .
 #-----------------------------------------------------------------------------
-SUBDIRS = .
+SUBDIRS = . logging_lib
 
 
 #-----------------------------------------------------------------------------
@@ -41,7 +41,8 @@ CXXFLAGS =	\
 -D_GNU_SOURCE \
 -Wno-sign-compare \
 -Wno-unused-value \
--Illnse_messages
+-I llnse_messages \
+-I logging_api
 
 #-----------------------------------------------------------------------------
 # Link options
@@ -217,7 +218,17 @@ debug:
 
 # DO NOT DELETE
 
+obj_x86/i2cio.o: i2cio.h mmio.h global.h gpio.h rtlid.h mcp23017.h
+obj_x86/rtlid.o: rtlid.h mmio.h
+obj_x86/mcp23017.o: mcp23017.h i2cio.h mmio.h
 obj_x86/mmio.o: mmio.h
-obj_x86/gpio.o: gpio.h mmio.h global.h
-obj_x86/main.o: nse_channel.h global.h gpio.h mmio.h
-obj_x86/nse_channel.o: global.h gpio.h mmio.h nse_channel.h llnse_messages.h
+obj_x86/gpio.o: gpio.h mmio.h global.h rtlid.h i2cio.h mcp23017.h
+obj_x86/main.o: nse_channel.h global.h gpio.h mmio.h rtlid.h i2cio.h
+obj_x86/main.o: mcp23017.h
+obj_x86/nse_channel.o: global.h gpio.h mmio.h rtlid.h i2cio.h mcp23017.h
+obj_x86/nse_channel.o: nse_channel.h llnse_messages.h
+obj_x86/logging_lib/logger.o: logging_lib/loggerImpl.h
+obj_x86/logging_lib/logger.o: logging_lib/udp_msg_sender.h
+obj_x86/logging_lib/udp_msg_sender.o: logging_lib/udp_msg_sender.h
+obj_x86/logging_lib/loggerImpl.o: logging_lib/loggerImpl.h
+obj_x86/logging_lib/loggerImpl.o: logging_lib/udp_msg_sender.h

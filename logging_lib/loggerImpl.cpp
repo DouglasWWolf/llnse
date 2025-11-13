@@ -32,7 +32,7 @@ bool CLogger::Impl::init(const std::string& moduleName)
 // log() - General purpose logging routine
 //=============================================================================
 void CLogger::Impl::log(Severity sev, const char* file, uint32_t line,
-     const char* fmt, va_list& ap)
+                        const std::string& fmt, va_list& ap)
 {
     char entry[2048], *p;
     const char* end = entry + sizeof(entry) - 1;
@@ -79,7 +79,7 @@ void CLogger::Impl::log(Severity sev, const char* file, uint32_t line,
 
     // Stuff the formatted error message into "entry"
     p = strchr(entry, 0);    
-    vsnprintf(p, end - p, fmt, ap);
+    vsnprintf(p, end - p, fmt.c_str(), ap);
    
     // Send the log entry to the log server    
     sender_.send(entry, strlen(entry)+1);

@@ -16,7 +16,7 @@ public:
     bool    init(const std::string& moduleName);
 
     // This is the underlying "log()" mechanism that all the other logging methods call
-    void    log(Severity sev, const char* file, uint32_t line, const char* fmt, va_list& ap);
+    void    log(Severity sev, const char* file, uint32_t line, const std::string& fmt, va_list& ap);
 
 protected:
 

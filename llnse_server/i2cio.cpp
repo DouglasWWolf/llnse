@@ -1,9 +1,9 @@
 #include <unistd.h>
 #include <cstdarg>
 #include "i2cio.h"
+#include "logger.h"
+#include "global.h"
 
-
-void throwRuntime(const char* fmt, ...);
 
 
 //=============================================================================
@@ -74,10 +74,11 @@ void CI2CIO::write(uint8_t device_id, uint8_t data_bytes, uint32_t data_value)
 // This writes data to a register of a device in the I2C bus
 //=============================================================================
 void CI2CIO::write_register(uint8_t device_id,
-                           uint8_t addr_bytes, uint32_t addr_value, 
-                           uint8_t data_bytes, uint32_t data_value)
+                            uint8_t addr_bytes, uint32_t addr_value, 
+                            uint8_t data_bytes, uint32_t data_value)
 {
     int i;
+    std::string s;
 
     // Enforce single-threaded access
     const std::lock_guard<std::recursive_mutex> lock(mutex_);
@@ -116,7 +117,9 @@ void CI2CIO::write_register(uint8_t device_id,
         usleep(10);
         if (reg[IIC_ISR] & (I2C_ERR_ARB | I2C_ERR_TX))
         {
-            throwRuntime("I2C TX fault on bus %i, device 0x%02X", bus_id_, device_id);    
+            s = format("I2C TX fault on bus %i, device 0x%02X", bus_id_, device_id);
+            LOG_FATAL(s);
+            throwRuntime(s);    
         }
 
         // If the I2C bus is no longer busy, we're done
@@ -128,7 +131,9 @@ void CI2CIO::write_register(uint8_t device_id,
     }
 
     // The bus never went idle!
-    throwRuntime("I2C TX timeout on bus %i, device 0x%02X", bus_id_, device_id);    
+    s = format("I2C TX timeout on bus %i, device 0x%02X", bus_id_, device_id);
+    LOG_FATAL(s);
+    throwRuntime(s);    
 }
 //=============================================================================
 
@@ -211,7 +216,10 @@ uint8_t CI2CIO::receive_byte(uint32_t timeout_us)
         elapsed_us += 10;
     }
 
-    throwRuntime("I2C Read fault on bus %i, device 0x%02X", bus_id_, device_id_);
+    // Log and throw the fault
+    std::string s = format("I2C RX fault on bus %i, device 0x%02X", bus_id_, device_id_);
+    LOG_FATAL(s);
+    throwRuntime(s);
 
     // This is here to keep the compiler happy
     return 0;

@@ -9,7 +9,7 @@ using namespace log;
 //=============================================================================
 bool CLogger::init(const std::string& moduleName)
 {
-    return p_impl->init(moduleName);
+    return impl_->init(moduleName);
 }
 //=============================================================================
 
@@ -22,7 +22,7 @@ void CLogger::log(Severity sev, const char* file, uint32_t line,
 {
     va_list ap;
     va_start(ap, fmt);
-    p_impl->log(sev, file, line, fmt, ap);
+    impl_->log(sev, file, line, fmt, ap);
     va_end(ap);
 }
 //=============================================================================
@@ -35,7 +35,7 @@ void CLogger::trace(const char* fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    p_impl->log(TRACE, ".", 0, fmt, ap);
+    impl_->log(TRACE, ".", 0, fmt, ap);
     va_end(ap);
 }
 //=============================================================================
@@ -44,7 +44,7 @@ void CLogger::trace(const char* fmt, ...)
 //=============================================================================
 // Constructor and destructor
 //=============================================================================
-CLogger::CLogger() : p_impl(std::make_unique<CLogger::Impl>()) {};
+CLogger::CLogger() : impl_(std::make_unique<CLogger::Impl>()) {};
 CLogger::~CLogger() = default;
 //=============================================================================
 

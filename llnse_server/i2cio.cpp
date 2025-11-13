@@ -63,9 +63,9 @@ static uint8_t byte(uint32_t value, int which)
 //=============================================================================
 // A convenience method for writing data to a device
 //=============================================================================
-void CI2CIO::write(uint8_t deviceID, uint8_t dataBytes, uint32_t dataValue)
+void CI2CIO::write(uint8_t device_id, uint8_t data_bytes, uint32_t data_value)
 {
-    writeRegister(deviceID, 0, 0, dataBytes, dataValue);
+    write_register(device_id, 0, 0, data_bytes, data_value);
 }
 //=============================================================================
 
@@ -73,34 +73,37 @@ void CI2CIO::write(uint8_t deviceID, uint8_t dataBytes, uint32_t dataValue)
 //=============================================================================
 // This writes data to a register of a device in the I2C bus
 //=============================================================================
-void CI2CIO::writeRegister(uint8_t deviceID,
-                           uint8_t addrBytes, uint32_t addrValue, 
-                           uint8_t dataBytes, uint32_t dataValue)
+void CI2CIO::write_register(uint8_t device_id,
+                           uint8_t addr_bytes, uint32_t addr_value, 
+                           uint8_t data_bytes, uint32_t data_value)
 {
     int i;
 
     // Enforce single-threaded access
     const std::lock_guard<std::recursive_mutex> lock(mutex_);
 
+    // Save the device ID for error message
+    device_id_ = device_id;
+
     // Reset the I2C controller
     reg[IIC_SOFTR] = 0x0A;
 
     // Start a write transaction to the specified I2C device
-    reg[IIC_TX_FIFO] = (I2C_START | (deviceID << 1) | I2C_WR);
+    reg[IIC_TX_FIFO] = (I2C_START | (device_id << 1) | I2C_WR);
 
     // Write the address bytes to TX_FIFO
-    if (addrBytes) for (i=addrBytes-1; i >= 0; --i)
+    if (addr_bytes) for (i=addr_bytes-1; i >= 0; --i)
     {
-        reg[IIC_TX_FIFO] = byte(addrValue, i);
+        reg[IIC_TX_FIFO] = byte(addr_value, i);
     }
 
     // Write the data-bytes to TX_FIFO
-    for (i=dataBytes-1; i >= 0; --i)
+    for (i=data_bytes-1; i >= 0; --i)
     {
         if (i)
-            reg[IIC_TX_FIFO] = byte(dataValue, i);
+            reg[IIC_TX_FIFO] = byte(data_value, i);
         else
-            reg[IIC_TX_FIFO] = byte(dataValue, i) | I2C_STOP;
+            reg[IIC_TX_FIFO] = byte(data_value, i) | I2C_STOP;
     }
 
     // Start the I2C transaction
@@ -113,7 +116,7 @@ void CI2CIO::writeRegister(uint8_t deviceID,
         usleep(10);
         if (reg[IIC_ISR] & (I2C_ERR_ARB | I2C_ERR_TX))
         {
-            throwRuntime("I2C TX fault on device 0x%02X", deviceID);    
+            throwRuntime("I2C TX fault on bus %i, device 0x%02X", bus_id_, device_id);    
         }
 
         // If the I2C bus is no longer busy, we're done
@@ -125,7 +128,7 @@ void CI2CIO::writeRegister(uint8_t deviceID,
     }
 
     // The bus never went idle!
-    throwRuntime("I2C TX timeout on device 0x%02X", deviceID);    
+    throwRuntime("I2C TX timeout on bus %i, device 0x%02X", bus_id_, device_id);    
 }
 //=============================================================================
 
@@ -134,9 +137,9 @@ void CI2CIO::writeRegister(uint8_t deviceID,
 //=============================================================================
 // This writes data to a register of a device in the I2C bus
 //=============================================================================
-uint32_t CI2CIO::readRegister(uint8_t deviceID,
-                              uint8_t addrBytes, uint32_t addrValue, 
-                              uint8_t dataBytes, bool stopBeforeRead)
+uint32_t CI2CIO::read_register(uint8_t device_id,
+                               uint8_t addr_bytes, uint32_t addr_value, 
+                               uint8_t data_bytes, bool stop_before_read)
 {
     int i;
     uint32_t retval = 0;
@@ -144,26 +147,29 @@ uint32_t CI2CIO::readRegister(uint8_t deviceID,
     // Enforce single-threaded access
     const std::lock_guard<std::recursive_mutex> lock(mutex_);
 
+    // Save the device ID for error message
+    device_id_ = device_id;
+
     // Reset the I2C controller
     reg[IIC_SOFTR] = 0x0A;
 
     // Start a write transaction to the specified I2C device
-    reg[IIC_TX_FIFO] = (I2C_START | (deviceID << 1) | I2C_WR);
+    reg[IIC_TX_FIFO] = (I2C_START | (device_id << 1) | I2C_WR);
     
     // Write the address bytes to TX_FIFO
-    for (i=addrBytes-1; i >= 0; --i)
+    for (i=addr_bytes-1; i >= 0; --i)
     {
-        if (i == 0 && stopBeforeRead)
-            reg[IIC_TX_FIFO] = byte(addrValue, i) | I2C_STOP;
+        if (i == 0 && stop_before_read)
+            reg[IIC_TX_FIFO] = byte(addr_value, i) | I2C_STOP;
         else
-            reg[IIC_TX_FIFO] = byte(addrValue, i);        
+            reg[IIC_TX_FIFO] = byte(addr_value, i);        
     }
 
     // We want to read data from the device
-    reg[IIC_TX_FIFO] = (I2C_START | (deviceID << 1) | I2C_RD);
+    reg[IIC_TX_FIFO] = (I2C_START | (device_id << 1) | I2C_RD);
  
     // Tell the I2C how many bytes of data to read
-    reg[IIC_TX_FIFO] = dataBytes | I2C_STOP;
+    reg[IIC_TX_FIFO] = data_bytes | I2C_STOP;
 
     // Start the I2C transaction
     reg[IIC_CR] = I2C_EN;    
@@ -176,9 +182,9 @@ uint32_t CI2CIO::readRegister(uint8_t deviceID,
     }
     
     // Build the return value by reading bytes from the RX_FIFO
-    for (i=0; i<dataBytes; ++i)
+    for (i=0; i<data_bytes; ++i)
     {
-        retval = (retval << 8) | receiveByte(1000, deviceID);
+        retval = (retval << 8) | receive_byte(1000);
     }
 
     // Hand the resulting value to the caller
@@ -188,9 +194,9 @@ uint32_t CI2CIO::readRegister(uint8_t deviceID,
 
 
 //=============================================================================
-// receiveByte() - Waits for a byte to arrive in the RX_FIFO
+// receive_byte() - Waits for a byte to arrive in the RX_FIFO
 //=============================================================================
-uint8_t CI2CIO::receiveByte(uint32_t timeout_us, uint8_t deviceID)
+uint8_t CI2CIO::receive_byte(uint32_t timeout_us)
 {
     uint32_t elapsed_us = 0;
 
@@ -205,7 +211,7 @@ uint8_t CI2CIO::receiveByte(uint32_t timeout_us, uint8_t deviceID)
         elapsed_us += 10;
     }
 
-    throwRuntime("I2C Read fault on device 0x%02X", deviceID);
+    throwRuntime("I2C Read fault on bus %i, device 0x%02X", bus_id_, device_id_);
 
     // This is here to keep the compiler happy
     return 0;

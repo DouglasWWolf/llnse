@@ -163,6 +163,9 @@ void execute()
        g.rtlid.map("/pl_rtl/axi_revision/S_AXI");
        g.i2c_0.map("/pl_rtl/axi_iic_0/S_AXI");
 
+    // Tell the I2C bus what bus number it is
+    g.i2c_0.init(0);
+
     // Initialize the MCP23017 port expander
     g.px0.init(g.i2c_0, 0x20);
 

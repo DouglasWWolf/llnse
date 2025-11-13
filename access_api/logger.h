@@ -42,7 +42,7 @@ public:
 
 protected:
     class Impl;
-    std::unique_ptr<Impl> p_impl;
+    std::unique_ptr<Impl> impl_;
 
 };
 

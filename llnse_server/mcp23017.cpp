@@ -9,7 +9,9 @@ enum px_reg_t
 };
 
 //============================================================================
-// Swap the two bytes in a 16-bit integer
+// Swap the two bytes in a 16-bit integer.  We do this because the order of
+// the chip registers is such that PORTB is the low-order 8 bits of the 16
+// bit wide register, but our callers want PORTA to be the low-order 8-bits
 //============================================================================
 static uint16_t swap(uint16_t value)
 {
@@ -38,7 +40,7 @@ void CMCP23017::init(CI2CIO& bus, uint8_t device_id)
 //============================================================================
 void CMCP23017::set_dir(uint16_t input_pins)
 {
-    bus_->writeRegister(device_id_, 1, PX_IODIR, 2, swap(input_pins));
+    bus_->write_register(device_id_, 1, PX_IODIR, 2, swap(input_pins));
 }
 //============================================================================
 
@@ -49,7 +51,7 @@ void CMCP23017::set_dir(uint16_t input_pins)
 //============================================================================
 void CMCP23017::set_pullup(uint16_t pins)
 {
-    bus_->writeRegister(device_id_, 1, PX_GPPU, 2, swap(pins));
+    bus_->write_register(device_id_, 1, PX_GPPU, 2, swap(pins));
 }
 //============================================================================
 
@@ -59,7 +61,7 @@ void CMCP23017::set_pullup(uint16_t pins)
 //============================================================================
 void CMCP23017::set_gpio(uint16_t pins)
 {
-    bus_->writeRegister(device_id_, 1, PX_GPIO, 2, swap(pins));
+    bus_->write_register(device_id_, 1, PX_GPIO, 2, swap(pins));
 }
 //============================================================================
 
@@ -70,7 +72,7 @@ void CMCP23017::set_gpio(uint16_t pins)
 //============================================================================
 uint16_t CMCP23017::get_gpio()
 {
-    uint16_t pins = bus_->readRegister(device_id_, 1, PX_GPIO, 2, false);
+    uint16_t pins = bus_->read_register(device_id_, 1, PX_GPIO, 2, false);
     return swap(pins);
 }
 //============================================================================

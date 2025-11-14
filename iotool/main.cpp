@@ -21,6 +21,9 @@ llnse::Connection conn;
 // Acccess layer to the VPK120 on-board LEDs and DIP switches
 gpioAccess::CGpioAccess fpga(conn);
 
+// The handlers for these commands exist in other source files
+void cmd_rtl(int c);
+void cmd_px0(int c);
 
 //=============================================================================
 // The folder where the llnse FIFOs live depends on what architecture we're on
@@ -114,17 +117,18 @@ void parseCommandLine(const char** argv)
 void showHelp()
 {
     printf("Available commands:\n");
-    printf("   iotool rtl-version\n");
-    printf("   iotool rtl-date\n");
-    printf("   iotool rtl-time\n");
-    printf("   iotool rtl-hash\n");
-    printf("   iotool rtl-type\n");
-    printf("   iotool gpio-switches\n");
-    printf("   iotool gpio-leds <value>\n");
-    printf("   iotool px0-iodir <value>\n");
-    printf("   iotool px0-pullup <value>\n");    
-    printf("   iotool px0-gpio [new_value]\n");        
-
+    printf("   iotool rtl version\n");
+    printf("   iotool rtl date\n");
+    printf("   iotool rtl time\n");
+    printf("   iotool rtl hash\n");
+    printf("   iotool rtl type\n");
+    printf("   iotool gpio switches\n");
+    printf("   iotool gpio leds <value>\n");
+    printf("   iotool px0 iodir <value>\n");
+    printf("   iotool px0 pullup <value>\n");    
+    printf("   iotool px0 gpio [new_value]\n");   
+    printf("   iotool px0 emulate on <input_bits>\n");     
+    printf("   iotool px0 emulate off\n");         
 }
 //=============================================================================
 
@@ -152,10 +156,9 @@ uint32_t getu32(int index)
 //=============================================================================
 void execute()
 {
-    int c=0;
+    int      c=0;
     uint32_t value;
-    string s;
-    gpioAccess::rtl_t rtl;
+    string   s;
 
     if (keyword.size() == 0)
     {
@@ -169,61 +172,8 @@ void execute()
     // The first keyword is our command
     string& cmd = keyword[c++];
 
-    // Is the user asking for the RTL version?
-    if (cmd == "rtl-version")
-    {   
-        rtl = fpga.getRtl();
-        cout << rtl.version << "\n";
-        exit(0);
-    }
-
-    // Is the user asking for the RTL version?
-    if (cmd == "rtl-version")
-    {   
-        rtl = fpga.getRtl();
-        cout << rtl.version << "\n";
-        exit(0);
-    }
-
-    // Is the user asking for the RTL date?
-    if (cmd == "rtl-date")
-    {   
-        rtl = fpga.getRtl();
-        cout << rtl.date << "\n";
-        exit(0);
-    }
-
-    // Is the user asking for the RTL time?
-    if (cmd == "rtl-time")
-    {   
-        rtl = fpga.getRtl();
-        cout << rtl.time << "\n";
-        exit(0);
-    }
-
-    // Is the user asking for the RTL time?
-    if (cmd == "rtl-time")
-    {   
-        rtl = fpga.getRtl();
-        cout << rtl.time << "\n";
-        exit(0);
-    }
-
-    // Is the user asking for the RTL type?
-    if (cmd == "rtl-type")
-    {   
-        rtl = fpga.getRtl();
-        cout << rtl.type << "\n";
-        exit(0);
-    }
-
-    // Is the user asking for the RTL repo hash?
-    if (cmd == "rtl-hash")
-    {   
-        rtl = fpga.getRtl();
-        cout << rtl.hash << "\n";
-        exit(0);
-    }
+    if (cmd == "rtl") cmd_rtl(1);
+    if (cmd == "px0") cmd_px0(1);
 
     // Is the user asking for the state of the GPIO DIP switches?
     if (cmd == "gpio-switches" || cmd == "gpio-dips")
@@ -244,48 +194,7 @@ void execute()
         exit(0);
     }
 
-    // Is the user setting the direction of the pins on PX0?
-    if (cmd == "px0-iodir")
-    {
-        // Fetch a numeric value
-        value = getu32(c++);
-
-        // Set the directions of the 16 pins on PX0
-        fpga.setPx0Iodir(value);
-        exit(0);
-    }
-
-
-    // Is the user enabling pullup resistors on PX0?
-    if (cmd == "px0-pullup")
-    {
-        // Fetch a numeric value
-        value = getu32(c++);
-
-        // Enable/disable optional pullup resistors on PX0
-        fpga.setPx0Pullup(value);
-        exit(0);
-    }
-
-    // Is the user setting / getting GPIO outputs on PX0?
-    if (cmd == "px0-gpio")
-    {
-        s = getKeyword(c++);
-
-        if (s.empty())
-        {
-            value = fpga.getPx0Gpio();
-            cout << value << "\n";                        
-        }
-        else
-        {
-            fpga.setPx0Gpio(touint32(s));
-        }
-        exit(0);
-    }
-
-
-
+    
     // If we get here, we didn't recognize the command
     cerr << "syntax-error\n";
     exit(1);

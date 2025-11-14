@@ -52,6 +52,10 @@ namespace gpioAccess
         // Read the value of the 16 pins of PX0
         uint16_t    getPx0Gpio();
 
+        // Get and set the emulation parameters
+        void        setPx0Emu(bool flag, uint16_t input_pins);
+        std::tuple<bool, uint16_t> getPx0Emu();
+
 
     public:
          CGpioAccess(llnse::Connection& conn); 

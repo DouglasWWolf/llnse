@@ -36,3 +36,4 @@ struct global_t
 extern global_t g;
 
 #define LOG_FATAL(fmt, ...) g.Logger.log(log::FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define LOG_INFO(fmt, ...)  g.Logger.log(log::INFO,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)

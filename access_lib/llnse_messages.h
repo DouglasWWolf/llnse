@@ -7,7 +7,7 @@ namespace llnse
 
     // If a message is added, deleted, or changed, or if a message-type
     // is added, deleted, or changes, this number MUST be incremented!
-    const uint32_t MESSAGE_VERSION = 1;
+    const uint32_t MESSAGE_VERSION = 2;
 
     // This is the maximum length of any message
     const uint32_t MAX_MSG_LENGTH = 256;
@@ -24,6 +24,8 @@ namespace llnse
         MSG_SET_PX0_PULLUP,        
         MSG_SET_PX0_GPIO,
         MSG_GET_PX0_GPIO,
+        MSG_SET_PX0_EMU,
+        MSG_GET_PX0_EMU
     };
 
     // This is the maximum size of a message
@@ -110,6 +112,23 @@ namespace llnse
     {
         uint16_t pins;        
     };
+
+
+    struct set_px0_emu_req_t : public base_msg_t
+    {
+        bool     flag;
+        uint16_t input_pins;
+    };
+    struct set_px0_emu_rsp_t : public base_msg_t {};
+
+
+    struct get_px0_emu_req_t : public base_msg_t {};
+    struct get_px0_emu_rsp_t : public base_msg_t
+    {
+        bool     flag;
+        uint16_t input_pins;
+    };
+
 
 
     #pragma pack(pop)    

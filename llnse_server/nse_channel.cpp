@@ -99,6 +99,20 @@ void handle_get_px0_gpio(const char* msg_in, char* msg_out)
     rsp.pins = g.px0.get_gpio();
 }
 
+void handle_set_px0_emu(const char* msg_in, char* msg_out)
+{
+    MAKE_STRUCTS(set_px0_emu);
+    g.px0.set_emulation(req.flag, req.input_pins);
+}
+
+void handle_get_px0_emu(const char* msg_in, char* msg_out)
+{
+    MAKE_STRUCTS(get_px0_emu);
+    auto t =  g.px0.get_emulation();
+    rsp.flag       = std::get<0>(t);
+    rsp.input_pins = std::get<1>(t);
+}
+
 
 
 //=============================================================================
@@ -226,6 +240,14 @@ void CNseChannel::fifo_server(uint32_t channel)
 
                 case MSG_GET_PX0_GPIO:
                     handle_get_px0_gpio(msg_in, msg_out);
+                    break;
+
+                case MSG_SET_PX0_EMU:
+                    handle_set_px0_emu(msg_in, msg_out);
+                    break;
+
+                case MSG_GET_PX0_EMU:
+                    handle_get_px0_emu(msg_in, msg_out);
                     break;
                 
                 default:

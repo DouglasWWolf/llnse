@@ -1,0 +1,192 @@
+# Name of the tool we're going to use
+tool=../iotool/iotool.x86
+
+# This is a bitmask of the output pins
+output_mask=$((0x1F * 2**7))
+
+
+#====================================================================
+# get_value() - Turns a value string (like "on" or "off") into 
+#               a numeric 0/1 value
+#====================================================================
+get_value()
+{
+    local value=$1
+    local result=0
+
+    case $value in
+        "off")
+            result=0
+            ;;
+        "0")
+            result=0
+            ;;
+        "on")
+            result=1
+            ;;
+        "1") 
+            result=1
+            ;;
+        *)
+            echo "syntax-error" 1>&2
+            return
+    esac
+    echo $result
+}
+#====================================================================
+
+
+#====================================================================
+# get_mask() - Translates a pin-name to a bit-mask
+#====================================================================
+get_mask()
+{
+    local name=$1
+    local is_set=$2
+    local mask=0;
+
+    case $name in
+        "fan-alert")
+            mask=$((2**0))
+            ;;
+        "cooler-lid")
+            mask=$((2**1))
+            ;;
+        "storage-lid")
+            mask=$((2**2))
+            ;;
+        "tip-leak")
+            mask=$((2**3))
+            ;;
+        "asv-leak")
+            mask=$((2**4))
+            ;;
+        "drip-leak")
+            mask=$((2**5))
+            ;;
+        "sol-fault")
+            mask=$((2**6))
+            ;;
+        "sol-clear")
+            mask=$((2**7))
+            ;;
+        "pump1")
+            mask=$((2**8))
+            ;;
+        "pump2")
+            mask=$((2**9))
+            ;;
+        "valve1")
+            mask=$((2**10))
+            ;;
+        "valve2")
+            mask=$((2**11))
+            ;;
+        "service")
+            mask=$((2**12))
+            ;;
+        "robot-power")
+            mask=$((2**13))
+            ;;
+        "door-lock")
+            mask=$((2**14))
+            ;;
+        "robot-home")
+            mask=$((2**15))
+            ;;
+        *)
+            echo "syntax-error" 1>&2
+            return
+            ;;
+    esac
+
+    # Is the user attempting to set a value for an output pin?  
+    if [ ! -z $is_set ] && [ $((mask & output_mask)) -ne 0 ]; then
+        echo "can't set values for output pins" 1>&2
+        return
+    fi
+
+    # Tell the world the value of the bit-mask
+    echo $mask
+}
+#====================================================================
+
+
+#====================================================================
+# set the value of a named pin on PX0
+#====================================================================
+do_set()
+{
+    local mask=$(get_mask $1 set)
+    test -z $mask && exit 1
+
+    local value=$(get_value $2)
+    test -z $value && exit 1
+    
+    current=$($tool px0 gpio)
+    
+    test $value -eq 1 && current=$((current | mask)) || current=$((current & ~mask))
+    $tool px0 emulate on $current
+}
+#====================================================================
+
+
+#====================================================================
+# fetch the value of a named pin on PX0
+#====================================================================
+do_get()
+{
+    local mask=$(get_mask $1)
+    test -z $mask && exit 1
+
+    current=$($tool px0 gpio)
+    
+    test $((current & mask)) -eq 0 && echo "0" || echo "1"
+}
+#====================================================================
+
+if [ -z $1 ]; then
+    echo "sim init"
+    echo '  : places system in emulation mode'
+    echo 
+    echo "sim config"
+    echo "  : programs the MCP23017 registers for our hardware"
+    echo 
+    echo 'sim get <pin-name>'
+    echo 'sim set <pin-name> <pin-value>'
+    echo 
+    echo '<pin-name> can be:'
+    echo "  fan-alert,  cooler-lid,  storage-lid,  tip-leak"
+    echo "  asv-leak,   drip-leak,   sol-fault,    sol-clear"
+    echo "  pump1,      pump2,       valve1        valve2"
+    echo "  service,    robot-power, door-lock,    robot-home"
+    echo 
+    echo '<pin_value> can be:'
+    echo '  0 (or keyword "off")'
+    echo '  1 (or keyword "on")'
+    echo
+    exit 0
+fi
+
+if [ "$1" == "set" ]; then
+    do_set $2 $3
+    exit 0
+fi
+
+
+if [ "$1" == "get" ]; then
+    do_get $2 $3
+    exit 0
+fi
+
+if [ "$1" == "config" ]; then
+    $tool px0 emulate on 0
+    $tool px0 gpio $((2 ** 7))
+    $tool px0 iodir $((~output_mask))
+    exit 0
+fi
+
+if [ "$1" == "init" ]; then
+    $tool px0 emulate on 0
+    exit 0
+fi

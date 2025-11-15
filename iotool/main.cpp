@@ -22,8 +22,10 @@ llnse::Connection conn;
 gpioAccess::CGpioAccess fpga(conn);
 
 // The handlers for these commands exist in other source files
-void cmd_rtl(int c);
-void cmd_px0(int c);
+void cmd_rtl  (int c);
+void cmd_px0  (int c);
+void cmd_gpio (int c);
+void cmd_ps200(int c);
 
 //=============================================================================
 // The folder where the llnse FIFOs live depends on what architecture we're on
@@ -71,6 +73,38 @@ uint32_t touint32(const string& s)
     return strtoul(buffer, nullptr, 0);
 }
 //=============================================================================
+
+
+
+//=============================================================================
+// toint32() - Converts a string to a 32-bit integer
+//=============================================================================
+int32_t toint32(const string& s)
+{
+    char buffer[1000], *out = buffer;
+
+    const char* in = s.c_str();
+
+    // Strip underscores from the input string
+    while (*in)
+    {
+        if (*in == '_')
+        {
+            ++in;
+            continue;
+        }
+        *out++ = *in++;      
+    }
+    *out = 0;
+
+    // Return the binary value of the string
+    return strtol(buffer, nullptr, 0);
+}
+//=============================================================================
+
+
+
+
 
 
 //=============================================================================
@@ -122,13 +156,20 @@ void showHelp()
     printf("   iotool rtl time\n");
     printf("   iotool rtl hash\n");
     printf("   iotool rtl type\n");
+    printf("\n");
     printf("   iotool gpio switches\n");
     printf("   iotool gpio leds <value>\n");
+    printf("\n");
     printf("   iotool px0 iodir <value>\n");
     printf("   iotool px0 pullup <value>\n");    
     printf("   iotool px0 gpio [new_value]\n");   
     printf("   iotool px0 emulate on <input_bits>\n");     
     printf("   iotool px0 emulate off\n");         
+    printf("\n");
+    printf("   iotool ps200\n");   
+    printf("   iotool ps200 emulate on <signed-int>\n");     
+    printf("   iotool ps200 emulate off\n");         
+
 }
 //=============================================================================
 
@@ -149,6 +190,22 @@ uint32_t getu32(int index)
 //=============================================================================
 
 
+//=============================================================================
+// Fetches a keyword as a int32_t
+//=============================================================================
+int32_t get32(int index)
+{
+    std::string s = getKeyword(index);
+    if (s.empty())
+    {
+        cerr << "Missing parameter\n";
+        exit(1);            
+    }
+    return toint32(s);
+}
+//=============================================================================
+
+
 
 
 //=============================================================================
@@ -157,7 +214,6 @@ uint32_t getu32(int index)
 void execute()
 {
     int      c=0;
-    uint32_t value;
     string   s;
 
     if (keyword.size() == 0)
@@ -172,28 +228,11 @@ void execute()
     // The first keyword is our command
     string& cmd = keyword[c++];
 
-    if (cmd == "rtl") cmd_rtl(1);
-    if (cmd == "px0") cmd_px0(1);
-
-    // Is the user asking for the state of the GPIO DIP switches?
-    if (cmd == "gpio-switches" || cmd == "gpio-dips")
-    {   
-        value = fpga.getSwitches();
-        cout << value << "\n";
-        exit(0);
-    }
-
-    // Is the user setting the GPIO LEDs?
-    if (cmd == "gpio-leds")
-    {   
-        // Fetch a numeric value
-        value = getu32(c++);
-
-        // And drive the LEDS to the specified value
-        fpga.setLeds(value);
-        exit(0);
-    }
-
+    // Execute one of the command groups
+    if (cmd == "rtl"  ) cmd_rtl  (1);
+    if (cmd == "px0"  ) cmd_px0  (1);
+    if (cmd == "gpio" ) cmd_gpio (1);
+    if (cmd == "ps200") cmd_ps200(1);
     
     // If we get here, we didn't recognize the command
     cerr << "syntax-error\n";

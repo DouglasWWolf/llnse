@@ -22,6 +22,10 @@ public:
                                uint8_t addr_bytes, uint32_t addr_value, 
                                uint8_t data_bytes, uint32_t data_value);
 
+    // Reads up to 4 bytes from the specified device
+    uint32_t    read(uint8_t device_id, uint8_t data_bytes);
+
+
     // Reads up to 4 bytes from the specified register of a specified device
     uint32_t    read_register(uint8_t device_id,
                               uint8_t addr_bytes, uint32_t addr_value, 

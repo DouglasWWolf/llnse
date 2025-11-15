@@ -181,12 +181,17 @@ void execute()
     g.switches.map("/pl_rtl/axi_gpio_1/S_AXI");
        g.rtlid.map("/pl_rtl/axi_revision/S_AXI");
        g.i2c_0.map("/pl_rtl/axi_iic_0/S_AXI");
+       g.i2c_1.map("/pl_rtl/axi_iic_1/S_AXI");
 
-    // Tell the I2C bus what bus number it is
+    // Tell the I2C buses what bus number it is
     g.i2c_0.init(0);
+    g.i2c_1.init(1);
 
     // Initialize the MCP23017 port expander
     g.px0.init(g.i2c_0, 0x20);
+
+    // Initialize the IDEX PS200 pressure sensor
+    g.ps200.init(g.i2c_1, 0x5A);
 
     // Create the signal FIFO
     sprintf(signal_fifo, "%s/signal.fifo", g.fifo_folder.c_str());

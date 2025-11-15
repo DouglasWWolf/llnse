@@ -183,4 +183,61 @@ std::tuple<bool, uint16_t> CGpioAccess::getPx0Emu()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//=============================================================================
+// Get the value of the PS200 pressure sensor
+//=============================================================================
+int32_t CGpioAccess::getPs200Reading()
+{
+    MAKE_STRUCTS(llnse::get_ps200_value, llnse::MSG_GET_PS200_VALUE);
+    conn_.p_impl->rpc(req, rsp);    
+    return rsp.reading;
+}
+//=============================================================================
+
+
+//=============================================================================
+// Set PS200 hardware emulation parameters
+//=============================================================================
+void CGpioAccess::setPs200Emu(bool flag, int32_t reading)
+{
+    MAKE_STRUCTS(llnse::set_ps200_emu, llnse::MSG_SET_PS200_EMU);    
+
+    req.flag = flag;
+    req.reading = reading;    
+    conn_.p_impl->rpc(req, rsp);    
+}
+//=============================================================================
+
+
+//=============================================================================
+// Get PS200 hardware emulation parameters
+//=============================================================================
+std::tuple<bool, int32_t> CGpioAccess::getPs200Emu()
+{
+    MAKE_STRUCTS(llnse::get_ps200_emu, llnse::MSG_GET_PS200_EMU);        
+    conn_.p_impl->rpc(req, rsp);    
+    return std::make_tuple(rsp.flag, rsp.reading);
+}
+//=============================================================================
+
+
+
 } /* End of namespace */

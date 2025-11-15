@@ -4,6 +4,7 @@
 #include "rtlid.h"
 #include "i2cio.h"
 #include "mcp23017.h"
+#include "ps200.h"
 #include "logger.h"
 
 void throwRuntime(const std::string& fmt, ...);
@@ -24,12 +25,13 @@ struct global_t
         std::string memmap = "/home/wolf/memory.map";
     #endif
 
-
     CGPIO        leds;
     CGPIO        switches;
     CRtlId       rtlid;
     CI2CIO       i2c_0;
+    CI2CIO       i2c_1;
     CMCP23017    px0;
+    CPS200       ps200;
     log::CLogger Logger;
 };
 

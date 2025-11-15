@@ -138,6 +138,15 @@ void CI2CIO::write_register(uint8_t device_id,
 //=============================================================================
 
 
+//=============================================================================
+// This does a raw read of the specified device
+//=============================================================================
+uint32_t CI2CIO::read(uint8_t device_id, uint8_t data_bytes)
+{
+    return read_register(device_id, 0, 0, data_bytes, false);    
+}
+//=============================================================================
+
 
 //=============================================================================
 // This writes data to a register of a device in the I2C bus
@@ -158,16 +167,20 @@ uint32_t CI2CIO::read_register(uint8_t device_id,
     // Reset the I2C controller
     reg[IIC_SOFTR] = 0x0A;
 
-    // Start a write transaction to the specified I2C device
-    reg[IIC_TX_FIFO] = (I2C_START | (device_id << 1) | I2C_WR);
-    
-    // Write the address bytes to TX_FIFO
-    for (i=addr_bytes-1; i >= 0; --i)
+    // If there's an address, start a write transaction
+    if (addr_bytes)
     {
-        if (i == 0 && stop_before_read)
-            reg[IIC_TX_FIFO] = byte(addr_value, i) | I2C_STOP;
-        else
-            reg[IIC_TX_FIFO] = byte(addr_value, i);        
+        // Start a write transaction to the specified I2C device
+        reg[IIC_TX_FIFO] = (I2C_START | (device_id << 1) | I2C_WR);
+    
+        // Write the address bytes to TX_FIFO
+        for (i=addr_bytes-1; i >= 0; --i)
+        {
+            if (i == 0 && stop_before_read)
+                reg[IIC_TX_FIFO] = byte(addr_value, i) | I2C_STOP;
+            else
+                reg[IIC_TX_FIFO] = byte(addr_value, i);        
+        }
     }
 
     // We want to read data from the device

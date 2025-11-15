@@ -114,6 +114,27 @@ void handle_get_px0_emu(const char* msg_in, char* msg_out)
 }
 
 
+void handle_get_ps200_value(const char* msg_in, char* msg_out)
+{
+    MAKE_STRUCTS(get_ps200_value);
+    rsp.reading = g.ps200.get_reading();
+}
+
+void handle_set_ps200_emu(const char* msg_in, char* msg_out)
+{
+    MAKE_STRUCTS(set_ps200_emu);
+    g.ps200.set_emulation(req.flag, req.reading);
+}
+
+void handle_get_ps200_emu(const char* msg_in, char* msg_out)
+{
+    MAKE_STRUCTS(get_ps200_emu);
+    auto t = g.ps200.get_emulation();
+    rsp.flag    = std::get<0>(t);
+    rsp.reading = std::get<1>(t);
+}
+
+
 
 //=============================================================================
 // start() -  launches a server that waits for messages to arrive on COSI
@@ -248,6 +269,18 @@ void CNseChannel::fifo_server(uint32_t channel)
 
                 case MSG_GET_PX0_EMU:
                     handle_get_px0_emu(msg_in, msg_out);
+                    break;
+
+                case MSG_GET_PS200_VALUE:
+                    handle_get_ps200_value(msg_in, msg_out);
+                    break;
+
+                case MSG_SET_PS200_EMU:
+                    handle_set_ps200_emu(msg_in, msg_out);
+                    break;
+
+                case MSG_GET_PS200_EMU:
+                    handle_get_ps200_emu(msg_in, msg_out);
                     break;
                 
                 default:

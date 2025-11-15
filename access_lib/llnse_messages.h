@@ -25,7 +25,10 @@ namespace llnse
         MSG_SET_PX0_GPIO,
         MSG_GET_PX0_GPIO,
         MSG_SET_PX0_EMU,
-        MSG_GET_PX0_EMU
+        MSG_GET_PX0_EMU,
+        MSG_GET_PS200_VALUE,
+        MSG_SET_PS200_EMU,
+        MSG_GET_PS200_EMU
     };
 
     // This is the maximum size of a message
@@ -130,6 +133,26 @@ namespace llnse
     };
 
 
+    struct get_ps200_value_req_t : public base_msg_t {};
+    struct get_ps200_value_rsp_t : public base_msg_t
+    {
+        int32_t reading;        
+    };
+
+    struct set_ps200_emu_req_t : public base_msg_t
+    {
+        bool    flag;
+        int32_t reading;
+    };
+    struct set_ps200_emu_rsp_t : public base_msg_t {};
+
+
+    struct get_ps200_emu_req_t : public base_msg_t {};
+    struct get_ps200_emu_rsp_t : public base_msg_t
+    {
+        bool    flag;
+        int32_t reading;
+    };
 
     #pragma pack(pop)    
 }

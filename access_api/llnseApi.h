@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string>
 #include <memory>
+#include <stdexcept>
 
 namespace llnse
 {

@@ -35,7 +35,7 @@ const uint32_t IIC_RX_FIFO_PIRQ = 0x120 / 4;
 #define I2C_BB          4  /* in IIC_SR      */
 #define I2C_ERR_ARB     1  /* In IIC_ISR     */
 #define I2C_ERR_TX      2  /* In IIC_ISR     */
-#define I2C_RX_DONE     2  /* In IIC_ISR     */
+#define I2C_RX_DONE     3  /* In IIC_ISR     */
 //=============================================================================
 
 
@@ -196,7 +196,7 @@ uint32_t CI2CIO::read_register(uint8_t device_id,
     for (i=0; i<1000; ++i)
     {
         usleep(10);
-        if (reg[IIC_ISR & I2C_RX_DONE]) break;
+        if (reg[IIC_ISR] & I2C_RX_DONE) break;
     }
     
     // Build the return value by reading bytes from the RX_FIFO
